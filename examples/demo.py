@@ -8,7 +8,7 @@ from kivy.app import App
 import datetime
 import numpy as np
 import pandas as pd
-from dfguik import DfguiWidget
+from pdfkivygui.dfguik import DfguiWidget
 
 
 def create_dummy_data(size):
@@ -42,7 +42,7 @@ class DataFrameApp(App):
     def build(self):
         df = create_dummy_data(1000)
         return DfguiWidget(df)
-    
+
+
 if __name__ == '__main__':
     DataFrameApp().run()
-    
