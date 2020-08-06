@@ -1,3 +1,5 @@
+![Python package](https://github.com/jefpadfi/PandasDataframeGUIKivy/workflows/Python%20package/badge.svg?branch=master)
+
 # DataframeGUIKivy
 
 Port of Dataframe GUI module to a Kivy widget. Original module can be found at this repository: https://github.com/bluenote10/PandasDataFrameGUI
