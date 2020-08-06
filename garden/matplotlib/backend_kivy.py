@@ -239,23 +239,21 @@ is released, `motion_notify_event` which is raised when the mouse is on motion,
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import six
 import os
+
 import matplotlib
-import matplotlib.transforms as transforms
+import six
+# from matplotlib import _png
+from matplotlib import _path
+from matplotlib import rcParams
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.backend_bases import RendererBase, GraphicsContextBase, \
     FigureManagerBase, FigureCanvasBase, NavigationToolbar2, TimerBase
-from matplotlib.figure import Figure
-from matplotlib.transforms import Bbox, Affine2D
 from matplotlib.backend_bases import ShowBase, Event
 from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 from matplotlib.mathtext import MathTextParser
-from matplotlib import rcParams
-from hashlib import md5
-# from matplotlib import _png
-from matplotlib import _path
-
+from matplotlib.transforms import Affine2D
 
 try:
     import kivy
@@ -266,8 +264,6 @@ from kivy.app import App
 from kivy.graphics.texture import Texture
 from kivy.graphics import Rectangle
 from kivy.uix.widget import Widget
-from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.actionbar import ActionBar, ActionView, \
     ActionButton, ActionToggleButton, \
@@ -282,18 +278,13 @@ from kivy.graphics.tesselator import Tesselator
 from kivy.graphics.context_instructions import PopMatrix, PushMatrix
 from kivy.graphics import StencilPush, StencilPop, StencilUse, \
     StencilUnUse
-from kivy.logger import Logger
 from kivy.graphics import Mesh
 from kivy.resources import resource_find
 from kivy.uix.stencilview import StencilView
 from kivy.core.window import Window
-from kivy.uix.button import Button
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
-from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.clock import Clock
@@ -303,12 +294,9 @@ _mpl_ge_1_5 = LooseVersion(matplotlib.__version__) >= LooseVersion('1.5.0')
 _mpl_ge_2_0 = LooseVersion(matplotlib.__version__) >= LooseVersion('2.0.0')
 
 import numpy as np
-import io
 import textwrap
 import uuid
 import numbers
-from functools import partial
-from math import cos, sin, pi
 
 kivy.require('1.9.1')
 

@@ -69,16 +69,9 @@ from __future__ import (absolute_import, division, print_function,
 
 __all__ = ('FigureCanvasKivyAgg')
 
-import six
-
-import matplotlib
-from matplotlib._pylab_helpers import Gcf
-from matplotlib.backend_bases import RendererBase, GraphicsContextBase,\
-    FigureManagerBase, FigureCanvasBase
-from matplotlib.figure import Figure
-from matplotlib.transforms import Bbox
-from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.backend_bases import register_backend, ShowBase
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 
 try:
     import kivy
@@ -88,14 +81,12 @@ except ImportError:
 from kivy.app import App
 from kivy.graphics.texture import Texture
 from kivy.graphics import Rectangle, Color
-from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.base import EventLoop
 from kivy.uix.floatlayout import FloatLayout
 from kivy.core.image import Image
 from garden.matplotlib.backend_kivy import FigureCanvasKivy,\
-                            FigureManagerKivy, show, new_figure_manager,\
-                            NavigationToolbar2Kivy
+                            FigureManagerKivy, NavigationToolbar2Kivy
 
 register_backend('png', 'backend_kivyagg', 'PNG File Format')
 

@@ -1,8 +1,6 @@
 import kivy
 kivy.require('1.11.0')
 from kivy.lang import Builder
-from kivy.properties import ListProperty
-from kivy.uix.actionbar import ActionDropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
@@ -21,7 +19,6 @@ from kivy.properties import BooleanProperty,\
 
 import matplotlib
 matplotlib.use('module://garden.matplotlib.backend_kivy')
-from matplotlib.figure import Figure
 # from garden.matplotlib.backend_kivyagg import FigureCanvas
 from garden.matplotlib.backend_kivy import NavigationToolbar2Kivy
 import matplotlib.pyplot as plt
@@ -29,10 +26,6 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
-
-import datetime
-from datetime import date
-
 
 Builder.load_string("""
 <HeaderCell>
