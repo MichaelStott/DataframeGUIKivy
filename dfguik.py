@@ -1,5 +1,5 @@
 import kivy
-kivy.require('1.10.0')
+kivy.require('1.11.0')
 from kivy.lang import Builder
 from kivy.properties import ListProperty
 from kivy.uix.actionbar import ActionDropDown
@@ -20,10 +20,10 @@ from kivy.properties import BooleanProperty,\
                             StringProperty
 
 import matplotlib
-matplotlib.use('module://kivy.garden.matplotlib.backend_kivy')
+matplotlib.use('module://garden.matplotlib.backend_kivy')
 from matplotlib.figure import Figure
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvas,\
-                                                   NavigationToolbar2Kivy
+# from garden.matplotlib.backend_kivyagg import FigureCanvas
+from garden.matplotlib.backend_kivy import NavigationToolbar2Kivy
 import matplotlib.pyplot as plt
 
 from collections import OrderedDict

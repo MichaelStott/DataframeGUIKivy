@@ -23,19 +23,20 @@ def create_dummy_data(size):
         datetime.date(2016, 1, 1) + datetime.timedelta(days=int(delta))
         for delta in np.random.randint(1, 50, size)
     ]
-    return pd.DataFrame.from_items([
-        ("Date", random_dates),
-        ("UserID", choice(*user_ids)),
-        ("ProductID", choice(*product_ids)),
-        ("IntColumn", choice(1, 2, 3)),
-        ("FloatColumn", choice(np.nan, 1.0, 2.0, 3.0)),
-        ("StringColumn", choice("A", "B", "C")),
-        ("Gaussian 1", np.random.normal(0, 1, size)),
-        ("Gaussian 2", np.random.normal(0, 1, size)),
-        ("Uniform", np.random.uniform(0, 1, size)),
-        ("Binomial", np.random.binomial(20, 0.1, size)),
-        ("Poisson", np.random.poisson(1.0, size)),
-    ])
+    return pd.DataFrame.from_dict({
+        "Date": random_dates,
+        "UserID": choice(*user_ids),
+        "ProductID": choice(*product_ids),
+        "IntColumn": choice(1, 2, 3),
+        "FloatColumn": choice(np.nan, 1.0, 2.0, 3.0),
+        "StringColumn": choice("A", "B", "C"),
+        "Gaussian 1": np.random.normal(0, 1, size),
+        "Gaussian 2": np.random.normal(0, 1, size),
+        "Uniform": np.random.uniform(0, 1, size),
+        "Binomial": np.random.binomial(20, 0.1, size),
+        "Poisson": np.random.poisson(1.0, size),
+    })
+
 
 class DataFrameApp(App):
     def build(self):
