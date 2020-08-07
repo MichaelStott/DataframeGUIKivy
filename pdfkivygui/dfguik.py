@@ -426,7 +426,6 @@ class HistogramPlot(BoxLayout):
     Panel providing a histogram plot.
     """
 
-
     def __init__(self, **kwargs):
         super(HistogramPlot, self).__init__(**kwargs)
         self.dropdown = ColDropDown()
@@ -553,7 +552,7 @@ class ScatterGraph(BoxLayout):
         column_index1 = selection1
         column_index2 = selection2
         df = self.parent.parent.parent.df  # TODO: Do this more elegantly.
-        if len(df.iloc[:]) > column_index1 >= 0 and column_index2 < len(df.iloc[:]) and column_index2 >= 0 and len(
+        if len(df.iloc[:]) > column_index1 >= 0 and len(df.iloc[:]) > column_index2 >= 0 and len(
                 df) > 0:
             # NOTE: The following code generates a Type error  when attempting
             # to graph string data. The original code also generates this

@@ -38,6 +38,8 @@ def create_dummy_data(size):
     })
 
 
+
+
 class DataFrameApp(App):
     def build(self):
         df = create_dummy_data(1000)
