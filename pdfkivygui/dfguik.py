@@ -449,10 +449,13 @@ class Histogram(BoxLayout):
     Histogram portion of the histogram panel.
     """
 
+    show_nav = BooleanProperty(False)
+
     def __init__(self, **kwargs):
         super(Histogram, self).__init__(**kwargs)
         self.figure, self.axes = plt.subplots()
-        self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
+        if self.show_nav:
+            self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
         self.add_widget(self.figure.canvas)
 
     def redraw(self, selection):
@@ -536,10 +539,13 @@ class ScatterGraph(BoxLayout):
     Histogram portion of the histogram panel.
     """
 
+    show_nav = BooleanProperty(False)
+
     def __init__(self, **kwargs):
         super(ScatterGraph, self).__init__(**kwargs)
         self.figure, self.axes = plt.subplots()
-        self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
+        if self.show_nav:
+            self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
         self.add_widget(self.figure.canvas)
 
     def redraw(self, selection1, selection2):
