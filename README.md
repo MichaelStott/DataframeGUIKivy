@@ -1,3 +1,7 @@
+# ARCHIVED
+This repo is no longer being worked on. I have created a new library that is based on this located [here](https://github.com/jefpadfi/pdfkivygu).
+This repo will no longer be updated.
+
 ![Python package](https://github.com/jefpadfi/PandasDataframeGUIKivy/workflows/Python%20package/badge.svg?branch=master)
 
 # DataframeGUIKivy
