@@ -1,8 +1,9 @@
+from datetime import datetime
+
 import kivy
-kivy.require('1.10.0')
+
+kivy.require('1.11.0')
 from kivy.lang import Builder
-from kivy.properties import ListProperty
-from kivy.uix.actionbar import ActionDropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
@@ -14,25 +15,20 @@ from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.recycleview import RecycleView
-from kivy.properties import BooleanProperty,\
-                            ObjectProperty,\
-                            NumericProperty,\
-                            StringProperty
+from kivy.properties import BooleanProperty, ObjectProperty, NumericProperty, StringProperty
 
 import matplotlib
-matplotlib.use('module://kivy.garden.matplotlib.backend_kivy')
-from matplotlib.figure import Figure
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvas,\
-                                                   NavigationToolbar2Kivy
+
+matplotlib.use('module://pdfkivygui.garden.matplotlib.backend_kivy')
+# from garden.matplotlib.backend_kivyagg import FigureCanvas
+from pdfkivygui.garden.matplotlib.backend_kivy import NavigationToolbar2Kivy
 import matplotlib.pyplot as plt
 
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
-import datetime
-from datetime import date
-
+import os
 
 Builder.load_string("""
 <HeaderCell>
@@ -219,9 +215,9 @@ Builder.load_string("""
     #on_select: btn.text = '{}'.format(args[1])
 """)
 
-
 ''' Table Code from https://stackoverflow.com/questions/44463773/kivy-recycleview-recyclegridlayout-scrollable-label-problems#comment75948118_44463773
 '''
+
 
 class HeaderCell(Button):
     pass
@@ -250,7 +246,9 @@ class TableData(RecycleView):
     ncols = NumericProperty(None)
     rgrid = ObjectProperty(None)
 
-    def __init__(self, list_dicts=[], *args, **kwargs):
+    def __init__(self, list_dicts=None, *args, **kwargs):
+        if list_dicts is None:
+            list_dicts = []
         self.nrows = len(list_dicts)
         self.ncols = len(list_dicts[0])
 
@@ -264,15 +262,16 @@ class TableData(RecycleView):
                 self.data.append({'text': text, 'is_even': is_even})
 
     def sort_data(self):
-        #TODO: Use this to sort table, rather than clearing widget each time.
+        # TODO: Use this to sort table, rather than clearing widget each time.
         pass
-        
-        
+
+
 class Table(BoxLayout):
 
-    def __init__(self, list_dicts=[], *args, **kwargs):
-
+    def __init__(self, list_dicts=None, *args, **kwargs):
         super(Table, self).__init__(*args, **kwargs)
+        if list_dicts is None:
+            list_dicts = []
         self.orientation = "vertical"
 
         self.header = TableHeader(list_dicts=list_dicts)
@@ -317,9 +316,9 @@ class DataframePanel(BoxLayout):
             for i2 in range(len(keys)):
                 row[keys[i2]] = str(df.iloc[i1, i2])
             data.append(row)
-        data = sorted(data, key=lambda k: k[self.sort_key]) 
+        data = sorted(data, key=lambda k: k[self.sort_key])
         self.add_widget(Table(list_dicts=data))
-        
+
     def apply_filter(self, conditions):
         """
         External interface to set a filter.
@@ -357,7 +356,7 @@ class DataframePanel(BoxLayout):
                               self.df_orig.shape[0],
                               index=self.df_orig.index)
 
-    
+
 class ColumnSelectionPanel(BoxLayout):
     """
     Panel for selecting and re-arranging columns.
@@ -370,43 +369,42 @@ class ColumnSelectionPanel(BoxLayout):
         self.col_list.bind(minimum_height=self.col_list.setter('height'))
         for col in columns:
             self.col_list.add_widget(ToggleButton(text=col, state='down'))
-    
+
     def get_disabled_columns(self):
         return [x.text for x in self.col_list.children if x.state != 'down']
 
-    
+
 class FilterPanel(BoxLayout):
-    
-    def populate(self, columns):            
+
+    def populate(self, columns):
         self.filter_list.bind(minimum_height=self.filter_list.setter('height'))
         for col in columns:
             self.filter_list.add_widget(FilterOption(columns))
 
     def get_filters(self):
-        result=[]
+        result = []
         for opt_widget in self.filter_list.children:
             if opt_widget.is_option_set():
                 result.append(opt_widget.get_filter())
         return [x.get_filter() for x in self.filter_list.children
                 if x.is_option_set]
-            
-            
-            
+
+
 class FilterOption(BoxLayout):
-        
+
     def __init__(self, columns, **kwargs):
         super(FilterOption, self).__init__(**kwargs)
-        self.height="30sp"
-        self.size_hint=(0.9, None)
-        self.spacing=10
+        self.height = "30sp"
+        self.size_hint = (0.9, None)
+        self.spacing = 10
         options = ["Select Column"]
         options.extend(columns)
         self.spinner = Spinner(text='Select Column',
-                               values= options,
+                               values=options,
                                size_hint=(0.25, None),
                                height="30sp",
                                pos_hint={'center_x': .5, 'center_y': .5})
-        self.txt = TextInput(multiline=False, size_hint=(0.75, None),\
+        self.txt = TextInput(multiline=False, size_hint=(0.75, None),
                              font_size="15sp")
         self.txt.bind(minimum_height=self.txt.setter('height'))
         self.add_widget(self.spinner)
@@ -416,52 +414,54 @@ class FilterOption(BoxLayout):
         return self.spinner.text != 'Select Column'
 
     def get_filter(self):
-        return (self.spinner.text, self.txt.text)
+        return self.spinner.text, self.txt.text
 
-            
+
 class ColDropDown(DropDown):
     pass
 
-    
+
 class HistogramPlot(BoxLayout):
     """
     Panel providing a histogram plot.
     """
-    
+
     def __init__(self, **kwargs):
         super(HistogramPlot, self).__init__(**kwargs)
         self.dropdown = ColDropDown()
         self.dropdown.bind(on_select=lambda instance, x:
-                           setattr(self.select_btn, 'text', x))
+        setattr(self.select_btn, 'text', x))
 
     def populate_options(self, options):
         for index, option in enumerate(options):
-            button = Button(text=option, size_hint=(1,None), height='48dp')
+            button = Button(text=option, size_hint=(1, None), height='48dp')
             button.bind(on_release=lambda x, y=index, z=option:
-                        self.on_combo_box_select(y,z))
+            self.on_combo_box_select(y, z))
             self.dropdown.add_widget(button)
-            
-    
+
     def on_combo_box_select(self, index, text):
         self.dropdown.select(text)
         self.histogram.redraw(index)
 
-    
+
 class Histogram(BoxLayout):
     """
     Histogram portion of the histogram panel.
     """
-    
+
+    show_nav = BooleanProperty(False)
+
     def __init__(self, **kwargs):
         super(Histogram, self).__init__(**kwargs)
         self.figure, self.axes = plt.subplots()
-        self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
+        if self.show_nav:
+            self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
         self.add_widget(self.figure.canvas)
 
     def redraw(self, selection):
         column_index1 = selection
-        df = self.parent.parent.parent.df # TODO: Do this more elegantly.
-        if column_index1 < len(df.iloc[:]) and column_index1 >= 0 and len(df) > 0:
+        df = self.parent.parent.parent.df  # TODO: Do this more elegantly.
+        if len(df.iloc[:]) > column_index1 >= 0 and len(df) > 0:
             # NOTE: The following code generates a Type error  when attempting
             # to graph string data. The original code also generates this error,
             # but continues silently without alerting the user.
@@ -478,80 +478,82 @@ class Histogram(BoxLayout):
     def warning(self, msg):
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(Label(text=msg,
-                                    size_hint_y=1,
-                                    text_size=(250,  None),
-                                    halign='left',
-                                    valign='middle'))
+                                size_hint_y=1,
+                                text_size=(250, None),
+                                halign='left',
+                                valign='middle'))
         button_layout = BoxLayout()
-        close=Button(text="Close", size_hint=(0.8, 0.2))
-        close.bind(on_release = lambda x : popup.dismiss())
+        close = Button(text="Close", size_hint=(0.8, 0.2))
+        close.bind(on_release=lambda x: popup.dismiss())
         button_layout.add_widget(close)
         layout.add_widget(button_layout)
         popup = Popup(title='Histogram Error',
                       content=layout,
                       size_hint=(0.9, 0.9))
         popup.open()
-            
+
+
 class ScatterPlot(BoxLayout):
     """
     Panel providing a histogram plot.
     """
-    
+
     def __init__(self, **kwargs):
         super(ScatterPlot, self).__init__(**kwargs)
         self.dropdown1 = ColDropDown()
         self.dropdown2 = ColDropDown()
         self.dropdown1.bind(on_select=lambda instance, x:
-                           setattr(self.select_btn1, 'text', x))
+        setattr(self.select_btn1, 'text', x))
         self.dropdown2.bind(on_select=lambda instance, x:
-                           setattr(self.select_btn2, 'text', x))
-        self.index1=-1
-        self.index2=-1
+        setattr(self.select_btn2, 'text', x))
+        self.index1 = -1
+        self.index2 = -1
 
     def populate_options(self, options):
         for index, option in enumerate(options):
-            button = Button(text=option, size_hint=(1,None), height='48dp')
+            button = Button(text=option, size_hint=(1, None), height='48dp')
             button.bind(on_release=lambda x, y=index, z=option:
-                        self.on_combo_box_select1(y,z))
+            self.on_combo_box_select1(y, z))
             self.dropdown1.add_widget(button)
         for index, option in enumerate(options):
-            button = Button(text=option, size_hint=(1,None), height='48dp')
+            button = Button(text=option, size_hint=(1, None), height='48dp')
             button.bind(on_release=lambda x, y=index, z=option:
-                        self.on_combo_box_select2(y,z))
+            self.on_combo_box_select2(y, z))
             self.dropdown2.add_widget(button)
-            
+
     def on_combo_box_select1(self, index, text):
         self.dropdown1.select(text)
         self.index1 = index
-        if self.index1 >=0 and self.index2 >= 0:
+        if self.index1 >= 0 and self.index2 >= 0:
             self.scatter.redraw(self.index1, self.index2)
 
     def on_combo_box_select2(self, index, text):
         self.dropdown2.select(text)
         self.index2 = index
-        if self.index1 >=0 and self.index2 >= 0:
+        if self.index1 >= 0 and self.index2 >= 0:
             self.scatter.redraw(self.index1, self.index2)
 
-    
+
 class ScatterGraph(BoxLayout):
     """
     Histogram portion of the histogram panel.
     """
-    
+
+    show_nav = BooleanProperty(False)
+
     def __init__(self, **kwargs):
         super(ScatterGraph, self).__init__(**kwargs)
         self.figure, self.axes = plt.subplots()
-        self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
+        if self.show_nav:
+            self.add_widget(NavigationToolbar2Kivy(self.figure.canvas).actionbar)
         self.add_widget(self.figure.canvas)
 
     def redraw(self, selection1, selection2):
         column_index1 = selection1
         column_index2 = selection2
-        df = self.parent.parent.parent.df # TODO: Do this more elegantly.
-        if column_index1 < len(df.iloc[:]) and\
-           column_index1 >= 0 and\
-           column_index2 < len(df.iloc[:]) and\
-           column_index2 >= 0 and len(df) > 0:
+        df = self.parent.parent.parent.df  # TODO: Do this more elegantly.
+        if len(df.iloc[:]) > column_index1 >= 0 and column_index2 < len(df.iloc[:]) and column_index2 >= 0 and len(
+                df) > 0:
             # NOTE: The following code generates a Type error  when attempting
             # to graph string data. The original code also generates this
             # error, but continues silently without alerting the user.
@@ -570,19 +572,20 @@ class ScatterGraph(BoxLayout):
     def warning(self, msg):
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(Label(text=msg,
-                                    size_hint_y=1,
-                                    text_size=(250,  None),
-                                    halign='left',
-                                    valign='middle'))
+                                size_hint_y=1,
+                                text_size=(250, None),
+                                halign='left',
+                                valign='middle'))
         button_layout = BoxLayout()
-        close=Button(text="Close", size_hint=(0.8, 0.2))
-        close.bind(on_release = lambda x : popup.dismiss())
+        close = Button(text="Close", size_hint=(0.8, 0.2))
+        close.bind(on_release=lambda x: popup.dismiss())
         button_layout.add_widget(close)
         layout.add_widget(button_layout)
         popup = Popup(title='Histogram Error',
                       content=layout,
                       size_hint=(0.9, 0.9))
         popup.open()
+
 
 class DfguiWidget(TabbedPanel):
 
@@ -598,10 +601,11 @@ class DfguiWidget(TabbedPanel):
     # This should be changed so that the table isn't rebuilt
     # each time settings change.
     def open_panel1(self):
-        #arr = self.panel3.get_filters()
-        #print(str(arr))
+        # arr = self.panel3.get_filters()
+        # print(str(arr))
         self.panel1.apply_filter(self.panel3.get_filters())
-        self.panel1._generate_table(disabled=
-                                    self.panel2.get_disabled_columns())
+        self.panel1._generate_table(disabled=self.panel2.get_disabled_columns())
 
-        
+
+if __name__ == "__main__":
+    pass
